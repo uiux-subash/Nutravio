@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { LogoMark } from "../LogoMark";
-import { motion, useInView, useScroll, useTransform } from "motion/react";
-import { ArrowButton, Eyebrow, LoopVideo, Parallax, Reveal, RollText, ScrollWords, SproutArrow } from "../ui";
+import { AnimatePresence, motion, useInView, useScroll, useTransform } from "motion/react";
+import { ArrowButton, cx, Eyebrow, LoopVideo, Parallax, Reveal, ScrollWords } from "../ui";
 
 /* ── Statement over glowing seedlings ───────────────────────────── */
 const chips = [
@@ -143,12 +143,16 @@ export function Vision() {
   );
 }
 
-/* ── Solutions ──────────────────────────────────────────────────── */
+/* ── Solutions: interactive program switcher ───────────────────── */
 const solutions = [
   {
     tag: "Row crops & grains",
     title: "Broadacre mineral programs that lift yield, field by field.",
-    body: "Zone-mapped calcium, sulfur and zinc blends for wheat, maize, rice and oilseeds — applied once, working all season.",
+    body: "Zone-mapped calcium, sulfur and zinc blends for wheat, maize, rice and oilseeds, applied once and working all season.",
+    crops: ["Wheat", "Maize", "Rice", "Oilseeds"],
+    minerals: ["Ca", "S", "Zn"],
+    stat: "+18%",
+    statLabel: "average yield lift",
     img: "/images/wheat-field.jpg",
     alt: "A golden wheat field ready for harvest under a blue sky",
   },
@@ -156,14 +160,34 @@ const solutions = [
     tag: "Orchards & specialty",
     title: "High-value crop nutrition for fruit, vines and vegetables.",
     body: "Chelated boron, magnesium and silicon programs that sharpen fruit set, sugar, shelf-life and stress resilience.",
+    crops: ["Apples", "Citrus", "Vines", "Vegetables"],
+    minerals: ["B", "Mg", "Si"],
+    stat: "−38%",
+    statLabel: "fruit drop before harvest",
     img: "/images/apple-orchard.jpg",
     alt: "An apple tree heavy with ripe red fruit in an orchard",
   },
 ];
 
+const AUTO_MS = 7000;
+
 export function Solutions() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const ref = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { margin: "-20% 0px" });
+  const run = inView && !paused;
+
+  useEffect(() => {
+    if (!run) return;
+    const id = setTimeout(() => setActive((a) => (a + 1) % solutions.length), AUTO_MS);
+    return () => clearTimeout(id);
+  }, [run, active]);
+
+  const s = solutions[active];
+
   return (
-    <section id="solutions" className="relative bg-forest px-5 pb-28 md:px-10 md:pb-40" aria-labelledby="solutions-title">
+    <section ref={ref} id="solutions" className="relative bg-forest px-5 pb-28 md:px-10 md:pb-40" aria-labelledby="solutions-title">
       <div className="mx-auto max-w-[1400px]">
         <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
           <div>
@@ -177,46 +201,139 @@ export function Solutions() {
             </Reveal>
           </div>
           <Reveal delay={0.16}>
-            <p className="max-w-sm text-bone/60">Two programs, one principle: test first, then feed the soil exactly what it lacks — nothing more.</p>
+            <p className="max-w-sm text-bone/60">Two programs, one principle: test first, then feed the soil exactly what it lacks, nothing more.</p>
           </Reveal>
         </div>
 
-        <div className="mt-14 grid gap-4 md:grid-cols-2">
-          {solutions.map((s, i) => (
-            <Reveal key={s.tag} delay={i * 0.12}>
-              <a href="#contact" className="group relative isolate flex aspect-[4/5] flex-col justify-between overflow-hidden rounded-[28px] p-6 md:aspect-[5/6] md:p-8">
-                <Image src={s.img} alt={s.alt} fill sizes="(min-width:768px) 50vw, 100vw" className="-z-10 object-cover transition-transform duration-[1.4s] ease-out group-hover:scale-105" />
-                <div className="absolute inset-0 -z-10 bg-gradient-to-t from-forest via-forest/50 to-forest/10 transition-opacity duration-700 group-hover:opacity-90" />
-                <div className="flex items-start justify-between">
-                  <span className="eyebrow flex items-center gap-2 rounded-full border border-white/25 bg-white/15 py-1.5 pr-4 pl-1.5 text-white backdrop-blur-md">
-                    <span className="grid size-7 place-items-center rounded-full bg-lime text-forest">
-                      <LogoMark className="size-3.5" />
-                    </span>
-                    {s.tag}
-                  </span>
-                  <span className="rounded-full border border-white/25 bg-white/15 px-3.5 py-2 font-mono text-[12px] text-white backdrop-blur-md">
-                    0{i + 1}
-                    <span className="text-white/50"> / 0{solutions.length}</span>
-                  </span>
-                </div>
-                <div>
-                  <h3 className="max-w-[20ch] text-[26px] leading-[1.12] font-medium tracking-[-0.02em] md:text-[32px]">{s.title}</h3>
-                  <div className="grid grid-rows-[0fr] transition-all duration-500 group-hover:grid-rows-[1fr]">
-                    <p className="overflow-hidden text-bone/70">
-                      <span className="block pt-4">{s.body}</span>
-                    </p>
+        <Reveal delay={0.1}>
+          <div
+            className="mt-14 grid gap-4 rounded-[36px] bg-forest-2 p-3 md:p-4 lg:grid-cols-12"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+          >
+            {/* program list */}
+            <div className="flex flex-col gap-3 max-lg:order-2 lg:col-span-5">
+              {solutions.map((p, i) => {
+                const on = i === active;
+                return (
+                  <div
+                    key={p.tag}
+                    className={cx(
+                      "relative overflow-hidden rounded-[28px] transition-colors duration-500",
+                      on ? "bg-forest-3" : "bg-transparent hover:bg-white/[0.04]",
+                    )}
+                  >
+                    <button
+                      onClick={() => setActive(i)}
+                      aria-expanded={on}
+                      className="flex w-full items-center gap-4 p-5 text-left md:p-7"
+                    >
+                      <span
+                        className={cx(
+                          "grid size-11 shrink-0 place-items-center rounded-full font-mono text-[13px] transition-colors duration-500",
+                          on ? "bg-lime text-forest" : "bg-white/[0.06] text-bone/60",
+                        )}
+                      >
+                        0{i + 1}
+                      </span>
+                      <span className="flex-1">
+                        <span className={cx("eyebrow block text-[11px] transition-colors", on ? "text-lime" : "text-bone/50")}>{p.tag}</span>
+                        <span className={cx("font-display mt-1.5 block text-[24px] leading-[1.12] tracking-[-0.01em] md:text-[30px]", on ? "text-bone" : "text-bone/60")}>
+                          {p.title}
+                        </span>
+                      </span>
+                    </button>
+
+                    <div className={cx("grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(.22,1,.36,1)]", on ? "grid-rows-[1fr]" : "grid-rows-[0fr]")}>
+                      <div className="overflow-hidden">
+                        <div className="px-5 pb-6 md:px-7 md:pb-7 md:pl-[88px]">
+                          <p className="text-[15px] leading-relaxed text-bone/70">{p.body}</p>
+                          <ul className="mt-5 flex flex-wrap gap-2">
+                            {p.crops.map((c) => (
+                              <li key={c} className="eyebrow rounded-full bg-white/[0.07] px-3.5 py-2 text-[11px] text-bone/75">
+                                {c}
+                              </li>
+                            ))}
+                          </ul>
+                          <ArrowButton href="#contact" variant="lime" className="mt-6">
+                            Explore program
+                          </ArrowButton>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* auto-advance progress */}
+                    {on && (
+                      <span className="absolute inset-x-7 bottom-0 h-[2px] overflow-hidden rounded-full bg-white/10">
+                        <motion.span
+                          key={`${active}-${run}`}
+                          className="block h-full origin-left bg-lime"
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: run ? 1 : 0 }}
+                          transition={{ duration: run ? AUTO_MS / 1000 : 0.3, ease: "linear" }}
+                        />
+                      </span>
+                    )}
                   </div>
-                  <span className="eyebrow mt-6 inline-flex items-center gap-3 rounded-full border border-lime/40 py-1.5 pr-1.5 pl-5 text-lime backdrop-blur-md transition-colors duration-500 group-hover:bg-lime group-hover:text-forest">
-                    <RollText>Explore program</RollText>
-                    <span className="grid size-9 place-items-center rounded-full bg-lime text-forest transition-colors duration-500 group-hover:bg-forest group-hover:text-lime">
-                      <SproutArrow />
+                );
+              })}
+              <div className="mt-auto flex flex-wrap items-center justify-between gap-3 rounded-[28px] border border-white/10 p-5 md:px-7">
+                <p className="text-[15px] text-bone/70">Not sure which program fits your farm?</p>
+                <a href="#contact" className="eyebrow flex items-center gap-2 text-[12px] text-lime underline-offset-4 hover:underline">
+                  Book a free soil audit <span aria-hidden>→</span>
+                </a>
+              </div>
+            </div>
+
+            {/* media panel */}
+            <div className="relative isolate aspect-square overflow-hidden rounded-[28px] sm:aspect-[4/3] max-lg:order-1 lg:col-span-7 lg:aspect-auto lg:min-h-[600px]">
+              <AnimatePresence initial={false}>
+                <motion.div
+                  key={s.img}
+                  className="absolute inset-0 -z-10"
+                  initial={{ opacity: 0, scale: 1.08 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <Image src={s.img} alt={s.alt} fill sizes="(min-width:1024px) 58vw, 100vw" className="object-cover" />
+                </motion.div>
+              </AnimatePresence>
+              <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-t from-forest/80 via-transparent to-forest/30" />
+
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active}
+                  className="absolute inset-0 flex flex-col justify-between p-4 md:p-6"
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.5, delay: 0.15 }}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="eyebrow flex items-center gap-2 rounded-full border border-white/25 bg-white/15 py-1.5 pr-4 pl-1.5 text-[11px] text-white backdrop-blur-md">
+                      <span className="grid size-7 place-items-center rounded-full bg-lime text-forest">
+                        <LogoMark className="size-3.5" />
+                      </span>
+                      {s.tag}
                     </span>
-                  </span>
-                </div>
-              </a>
-            </Reveal>
-          ))}
-        </div>
+                    <div className="flex gap-1.5 rounded-full border border-white/25 bg-white/15 p-1.5 backdrop-blur-md">
+                      {s.minerals.map((m) => (
+                        <span key={m} className="font-display grid size-9 place-items-center rounded-full bg-forest/70 text-[15px] text-lime">
+                          {m}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="self-end rounded-[20px] border border-white/25 bg-white/15 px-4 py-3 text-white backdrop-blur-md md:rounded-[24px] md:px-6 md:py-5">
+                    <p className="text-[30px] leading-none font-medium tracking-[-0.03em] md:text-[52px]">{s.stat}</p>
+                    <p className="eyebrow mt-2 text-[11px] text-white/80">{s.statLabel}</p>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
