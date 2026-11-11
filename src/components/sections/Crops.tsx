@@ -254,22 +254,7 @@ export function Crops() {
         <div className="mx-auto flex h-full max-w-[1400px] flex-col px-6 md:px-12 lg:flex-row lg:px-20 xl:px-24">
           {/* list */}
           <div className="relative z-10 flex flex-col justify-end pt-24 pb-6 lg:w-[46%] lg:justify-center lg:py-0">
-            {/* ruler */}
-            <div
-              className="absolute top-1/2 left-0 hidden h-[70%] -translate-y-1/2 flex-col justify-between lg:flex"
-              aria-hidden
-            >
-              {Array.from({ length: 34 }).map((_, i) => (
-                <span
-                  key={i}
-                  className={cx(
-                    "h-px bg-forest/25",
-                    i % 5 === 0 ? "w-3" : "w-1.5",
-                  )}
-                />
-              ))}
-            </div>
-            <div className="lg:pl-12">
+            <div>
               <p className="eyebrow flex items-center gap-2.5 text-forest/60">
                 <span className="inline-block size-1.5 rounded-full bg-current" />
                 Built for every crop
