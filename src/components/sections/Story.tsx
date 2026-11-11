@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { LogoMark } from "../LogoMark";
 import { AnimatePresence, motion, useInView, useScroll, useTransform } from "motion/react";
 import { ArrowButton, cx, Eyebrow, LoopVideo, Parallax, Reveal, ScrollWords } from "../ui";
 
@@ -310,13 +309,7 @@ export function Solutions() {
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.5, delay: 0.15 }}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="eyebrow flex items-center gap-2 rounded-full border border-white/25 bg-white/15 py-1.5 pr-4 pl-1.5 text-[11px] text-white backdrop-blur-md">
-                      <span className="grid size-7 place-items-center rounded-full bg-lime text-forest">
-                        <LogoMark className="size-3.5" />
-                      </span>
-                      {s.tag}
-                    </span>
+                  <div className="flex items-start justify-end gap-3">
                     <div className="flex gap-1.5 rounded-full border border-white/25 bg-white/15 p-1.5 backdrop-blur-md">
                       {s.minerals.map((m) => (
                         <span key={m} className="font-display grid size-9 place-items-center rounded-full bg-forest/70 text-[15px] text-lime">

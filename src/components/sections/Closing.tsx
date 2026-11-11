@@ -189,7 +189,8 @@ export function Contact() {
                   <input id="farm" name="farm" placeholder="Farm or company" className={fieldCls} autoComplete="organization" />
                   <div className="grid gap-3 sm:grid-cols-2">
                     <label className="sr-only" htmlFor="size">Farm size</label>
-                    <select id="size" name="size" defaultValue="" className={fieldCls} required>
+                    <div className="relative">
+                    <select id="size" name="size" defaultValue="" className={`${fieldCls} appearance-none pr-12`} required>
                       <option value="" disabled>
                         Farm size
                       </option>
@@ -198,8 +199,11 @@ export function Contact() {
                       <option>500 – 2,000 ha</option>
                       <option>2,000+ ha</option>
                     </select>
+                    <svg viewBox="0 0 12 12" className="pointer-events-none absolute top-1/2 right-5 size-3 -translate-y-1/2 text-bone/60" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden><path d="M2.5 4.5 6 8l3.5-3.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </div>
                     <label className="sr-only" htmlFor="crop">Main crop</label>
-                    <select id="crop" name="crop" defaultValue="" className={fieldCls} required>
+                    <div className="relative">
+                    <select id="crop" name="crop" defaultValue="" className={`${fieldCls} appearance-none pr-12`} required>
                       <option value="" disabled>
                         Main crop
                       </option>
@@ -209,6 +213,8 @@ export function Contact() {
                       <option>Vegetables</option>
                       <option>Other</option>
                     </select>
+                    <svg viewBox="0 0 12 12" className="pointer-events-none absolute top-1/2 right-5 size-3 -translate-y-1/2 text-bone/60" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden><path d="M2.5 4.5 6 8l3.5-3.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </div>
                   </div>
                   <label className="sr-only" htmlFor="message">Message</label>
                   <textarea id="message" name="message" rows={4} placeholder="What's happening in your fields?" className={`${fieldCls} resize-none !rounded-3xl`} />
