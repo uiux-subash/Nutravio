@@ -1,6 +1,4 @@
-Put the licensed Affairs font files here, named:
+Affairs (Regular + Italic) is used for headings and the NUTRAVIO wordmark.
 
-- Affairs-Regular.woff2  (preferred)
-- Affairs-Regular.otf    (fallback)
-
-Until they exist, headings fall back to Geist.
+These are the free personal-use files. For any commercial use, buy a
+commercial license from the designer (Soft Machine) and replace them here.
