@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# licensed fonts (add your own licensed copies locally)
+/public/fonts/*.otf
+/public/fonts/*.woff2
